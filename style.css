@@ -1,0 +1,121 @@
+:root {
+  --azul-sesi: #002B5B;
+  --verde-sesi: #007C5B;
+  --verde-hover: #009b75;
+  --branco: #ffffff;
+  --cinza: #f1f1f1;
+  --sombra: rgba(0, 0, 0, 0.2);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, var(--azul-sesi), var(--verde-sesi));
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1s ease-out;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  animation: slideUp 0.8s ease;
+}
+
+.login-card {
+  background-color: var(--branco);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px var(--sombra);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: popIn 0.5s ease;
+}
+
+.logo {
+  font-size: 30px;
+  color: var(--azul-sesi);
+  text-align: center;
+  margin-bottom: 4px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--verde-sesi);
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: border 0.3s;
+}
+
+input:focus {
+  border: 2px solid var(--verde-sesi);
+  outline: none;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  background-color: var(--verde-sesi);
+  color: var(--branco);
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button.secondary {
+  background-color: var(--azul-sesi);
+}
+
+button:hover {
+  background-color: var(--verde-hover);
+  transform: scale(1.02);
+}
+
+.mensagem {
+  text-align: center;
+  font-size: 14px;
+  color: #cc0000;
+  margin-top: 8px;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
