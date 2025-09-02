@@ -1,246 +1,39 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>SESI Connect - Notícias</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .criar-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: #007C5B;
-      color: white;
-      border: none;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-      z-index: 999;
-    }
-
-    .criar-btn:hover {
-      background-color: #009b75;
-    }
-
-    .formulario-noticia {
-      position: fixed;
-      top: 0;
-      right: -400px;
-      width: 350px;
-      height: 100%;
-      background: white;
-      box-shadow: -2px 0 12px rgba(0,0,0,0.3);
-      padding: 20px;
-      transition: right 0.4s ease;
-      z-index: 998;
-    }
-
-    .formulario-noticia.ativo {
-      right: 0;
-    }
-
-    .formulario-noticia h2 {
-      color: #002B5B;
-      margin-bottom: 16px;
-    }
-
-    .formulario-noticia input {
-      width: 100%;
-      margin-bottom: 12px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    #conteudo {
-      border: 1px solid #ccc;
-      padding: 10px;
-      min-height: 120px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 12px;
-      outline: none;
-    }
-
-    .formulario-noticia button {
-      background-color: #002B5B;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .formulario-noticia button:hover {
-      background-color: #004080;
-    }
-
-    .noticia {
-      background: white;
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .noticia img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin: 10px 0;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: 80px auto;
-      padding: 20px;
-    }
-
-    body {
-      background: linear-gradient(to right, #002B5B, #007C5B);
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    h1 {
-      color: white;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Sesi-Connect - Notícias</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Notícias - SESI Connect</h1>
-    <div id="noticias">Carregando notícias...</div>
+  <header>
+    <h1 class="logo">Sesi-Connect</h1>
+    <button class="btn logout" onclick="logout()">Sair</button>
+  </header>
+
+  <main>
+    <!-- Lista de notícias -->
+    <section id="listaNoticias">
+      <h2>Últimas Notícias</h2>
+      <div id="noticiasContainer"></div>
+    </section>
+  </main>
+
+  <!-- Botão de postar (visível apenas se logado) -->
+  <button id="btnPostar" class="btn-floating" onclick="abrirFormulario()" style="display:none;">+</button>
+
+  <!-- Formulário em modal -->
+  <div id="modalForm" class="modal">
+    <div class="modal-content">
+      <span class="fechar" onclick="fecharFormulario()">&times;</span>
+      <h2>Postar Notícia</h2>
+      <input type="text" id="titulo" placeholder="Título">
+      <input type="text" id="subtitulo" placeholder="Subtítulo">
+      <input type="text" id="imagem" placeholder="URL da Imagem">
+      <button class="btn" onclick="postar()">Publicar</button>
+    </div>
   </div>
 
-  <button class="criar-btn" onclick="abrirFormulario()">Criar Notícia</button>
-
-  <div class="formulario-noticia" id="formulario">
-    <h2>Criar Nova Notícia</h2>
-    <input type="text" id="titulo" placeholder="Título da notícia" />
-    <div id="conteudo" contenteditable="true" placeholder="Conteúdo..."></div>
-    <button onclick="enviarNoticia()">Publicar</button>
-  </div>
-
-  <script>
-    const dbURL = "https://sesi-connect-default-rtdb.firebaseio.com/"; // substitua pelo seu link do Firebase
-
-    function abrirFormulario() {
-      document.getElementById("formulario").classList.add("ativo");
-    }
-
-    function garantirEstruturaNoticias() {
-      fetch(`${dbURL}/noticias.json`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data) {
-            fetch(`${dbURL}/noticias.json`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({})
-            });
-          }
-        });
-    }
-
-    function carregarNoticias() {
-      fetch(`${dbURL}/noticias.json`)
-        .then(res => res.json())
-        .then(data => {
-          const container = document.getElementById("noticias");
-          container.innerHTML = "";
-          if (!data || Object.keys(data).length === 0) {
-            container.innerHTML = "<p style='color:white;'>Nenhuma notícia disponível.</p>";
-            return;
-          }
-
-          for (let id in data) {
-            const noticia = data[id];
-            const div = document.createElement("div");
-            div.className = "noticia";
-            div.innerHTML = `<h3>${noticia.titulo}</h3><div>${noticia.conteudo}</div>`;
-            container.appendChild(div);
-          }
-        })
-        .catch(err => {
-          document.getElementById("noticias").innerHTML = "Erro ao carregar notícias.";
-          console.error(err);
-        });
-    }
-
-    function enviarNoticia() {
-      const titulo = document.getElementById("titulo").value.trim();
-      const conteudo = document.getElementById("conteudo").innerHTML.trim();
-
-      if (!titulo || !conteudo) {
-        alert("Preencha todos os campos.");
-        return;
-      }
-
-      const novaNoticia = {
-        titulo,
-        conteudo
-      };
-
-      fetch(`${dbURL}/noticias.json`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(novaNoticia)
-      })
-      .then(() => {
-        document.getElementById("titulo").value = "";
-        document.getElementById("conteudo").innerHTML = "";
-        document.getElementById("formulario").classList.remove("ativo");
-        carregarNoticias();
-      })
-      .catch((err) => {
-        alert("Erro ao publicar notícia.");
-        console.error(err);
-      });
-    }
-
-    document.getElementById("conteudo").addEventListener("paste", async (event) => {
-      const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        if (item.type.indexOf("image") === 0) {
-          event.preventDefault();
-          const file = item.getAsFile();
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            const dataUrl = e.target.result;
-            const imgTag = `<img src="${dataUrl}" style="max-width:100%;border-radius:8px;margin:10px 0;" />`;
-            insertHTMLAtCursor(imgTag);
-          };
-          reader.readAsDataURL(file);
-        }
-      }
-    });
-
-    function insertHTMLAtCursor(html) {
-      const sel = window.getSelection();
-      if (sel.getRangeAt && sel.rangeCount) {
-        const range = sel.getRangeAt(0);
-        range.deleteContents();
-        const el = document.createElement("div");
-        el.innerHTML = html;
-        const frag = document.createDocumentFragment();
-        let node;
-        while ((node = el.firstChild)) {
-          frag.appendChild(node);
-        }
-        range.insertNode(frag);
-        range.collapse(false);
-      }
-    }
-
-    garantirEstruturaNoticias();
-    carregarNoticias();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
